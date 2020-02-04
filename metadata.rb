@@ -28,6 +28,10 @@ attribute "consul/use_dnsmasq",
           :description => "Flag to control installation of dnsmasq. If set to false, DNS service discovery will NOT work",
           :type => 'string'
 
+attribute "consul/configure_resolv_conf",
+          :description => "Let cookbook configure dnsmasq resolv.conf",
+          :type => 'string'
+
 attribute "consul/bind_address",
           :description => "IP address Consul agent will bind to. You can also set a go-sockaddr template. Check https://www.consul.io/docs/agent/options.html#_bind for more information.",
           :type => 'string'
