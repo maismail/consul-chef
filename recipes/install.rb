@@ -29,6 +29,24 @@ directory node['consul']['home'] do
     mode "750"
 end
 
+directory node['consul']['conf_dir'] do
+    owner node['consul']['user']
+    group node['consul']['group']
+    mode "750"
+end
+
+directory node['consul']['data_dir'] do
+    owner node['consul']['user']
+    group node['consul']['group']
+    mode "750"
+end
+
+directory node['consul']['bin_dir'] do
+    owner node['consul']['user']
+    group node['consul']['group']
+    mode "750"
+end
+
 cached_file = "#{Chef::Config['file_cache_path']}/consul_#{node['consul']['version']}_linux_amd64.zip"
 source = "#{node['download_url']}/consul/#{cached_file}"
 remote_file cached_file do
@@ -45,6 +63,6 @@ bash "unzip Consul" do
     umask 227
     code <<-EOH
         set -e
-        unzip #{cached_file} -d #{node['consul']['home']}
+        unzip #{cached_file} -d #{node['consul']['bin_dir']}
     EOH
 end

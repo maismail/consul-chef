@@ -8,6 +8,7 @@ if node['consul']['use_dnsmasq'].casecmp("true")
         systemd_unit "systemd-resolved.service" do
             action [:stop, :disable]
         end
+        service_target = "/lib/systemd/system/consul.service"
     when "rhel"
         directory "/var/run/dnsmasq" do
             owner 'root'
@@ -15,6 +16,7 @@ if node['consul']['use_dnsmasq'].casecmp("true")
             mode '755'
             action
         end
+        service_target = "/usr/lib/systemd/system/consul.service"
     end
 
     bash "copy resolv.conf to dnsmasq directory" do

@@ -1,0 +1,6 @@
+datacenter = "lc"
+data_dir = "<%= node['consul']['data_dir'] %>"
+retry_join = <%= @masters %>
+performance = {
+    raft_multiplier = 1
+}
