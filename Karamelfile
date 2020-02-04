@@ -1,0 +1,7 @@
+dependencies:
+  - recipe: consul::master
+    global:
+      - kagent::default
+  - recipe: consul::slave
+    global:
+      - kagent::default
