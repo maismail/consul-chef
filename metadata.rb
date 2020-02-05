@@ -20,6 +20,10 @@ attribute "consul/group",
           :description => "Group id of consul user",
           :type => 'string'
 
+attribute "consul/bin_url",
+          :description => "URL to download Consul",
+          :type => 'string'
+
 attribute "consul/version",
           :description => "Version of Consul to install",
           :type => 'string'

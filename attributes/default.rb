@@ -6,8 +6,8 @@ default['consul']['conf_dir']                   = "#{node['consul']['home']}/con
 default['consul']['data_dir']                   = "#{node['consul']['home']}/data_dir"
 default['consul']['bin_dir']                    = "#{node['consul']['home']}/bin"
 
-default['consul']['bin_url']                    = "#{node['download_url']}/consul/consul_#{node['consul']['version']}_linux_amd64.zip"
 default['consul']['version']                    = "1.6.3"
+default['consul']['bin_url']                    = "#{node['download_url']}/consul/consul_#{node['consul']['version']}_linux_amd64.zip"
 default['consul']['use_dnsmasq']                = "true"
 default['consul']['configure_resolv_conf']      = "true"
 
