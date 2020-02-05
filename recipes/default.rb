@@ -16,7 +16,11 @@ if node['consul']['use_dnsmasq'].casecmp("true")
             systemd_unit "systemd-resolved.service" do
                 action [:restart]
             end
-            resolv_conf = "/var/run/systemd/resolve/resolv.conf"
+            if node['consul']['effective_resolv_conf'].empty?
+                resolv_conf = "/var/run/systemd/resolve/resolv.conf"
+            else
+                resolv_conf = node['consul']['effective_resolv_conf']
+            end
         when "rhel"
             directory "/var/run/dnsmasq" do
                 owner 'root'
@@ -24,12 +28,17 @@ if node['consul']['use_dnsmasq'].casecmp("true")
                 mode '755'
                 action
             end
+            if node['consul']['effective_resolv_conf'].empty?
+                effective_resolv_conf = "/etc/resolv.conf"
+            else
+                effective_resolv_conf = node['consul']['effective_resolv_conf']
+            end
             bash "copy resolv.conf to dnsmasq directory" do
                 user 'root'
                 group 'root'
                 code <<-EOH
                     set -e
-                    cp /etc/resolv.conf /var/run/dnsmasq
+                    cp #{effective_resolv_conf} /var/run/dnsmasq
                 EOH
             end
             resolv_conf = "/var/run/dnsmasq/resolv.conf"

@@ -10,6 +10,7 @@ default['consul']['version']                    = "1.6.3"
 default['consul']['bin_url']                    = "#{node['download_url']}/consul/consul_#{node['consul']['version']}_linux_amd64.zip"
 default['consul']['use_dnsmasq']                = "true"
 default['consul']['configure_resolv_conf']      = "true"
+default['consul']['effective_resolv_conf']      = ""
 
 default['consul']['bind_address']               = ""
 

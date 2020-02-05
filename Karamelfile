@@ -4,4 +4,4 @@ dependencies:
       - kagent::default
   - recipe: consul::slave
     global:
-      - kagent::default
+      - consul::master

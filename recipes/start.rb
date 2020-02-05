@@ -5,7 +5,6 @@ when "rhel"
     service_target = "/usr/lib/systemd/system/consul.service"
 end
 
-## TODO Fix for Cloud
 if node['consul']['bind_address'].empty?
     bind_address = my_private_ip()
 else
@@ -18,7 +17,7 @@ template service_target do
     group 'root'
     mode 0644
     variables({
-        :bind_address => my_private_ip()
+        :bind_address => bind_address
     })
 end
 
