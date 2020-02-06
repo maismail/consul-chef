@@ -91,6 +91,7 @@ bash "unzip Consul" do
     umask 227
     code <<-EOH
         set -e
+        rm -f #{node['consul']['bin_dir']}/consul
         unzip #{cached_file} -d #{node['consul']['bin_dir']}
     EOH
 end

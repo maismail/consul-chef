@@ -71,11 +71,12 @@ end
 bash "export security env variables for client" do
     user node['consul']['user']
     group node['consul']['group']
+    cwd node['consul']['home']
     code <<-EOH
-        echo "export CONSUL_CACERT=#{node["kagent"]["certs"]["root_ca"]}" >> $HOME/.bashrc
-        echo "export CONSUL_CLIENT_CERT=#{node["kagent"]["certs_dir"]}/pub.pem" >> $HOME/.bashrc
-        echo "export CONSUL_CLIENT_KEY=#{node["kagent"]["certs_dir"]}/priv.key" >> $HOME/.bashrc
-        echo "export CONSUL_HTTP_ADDR=https://127.0.0.1:#{node['consul']['http_api_port']}" >> $HOME/.bashrc
-        echo "export CONSUL_TLS_SERVER_NAME=$(hostname -A | tr -d '[:space:]')" >> $HOME/.bashrc
+        echo "export CONSUL_CACERT=#{node["kagent"]["certs"]["root_ca"]}" >> .bashrc
+        echo "export CONSUL_CLIENT_CERT=#{node["kagent"]["certs_dir"]}/pub.pem" >> .bashrc
+        echo "export CONSUL_CLIENT_KEY=#{node["kagent"]["certs_dir"]}/priv.key" >> .bashrc
+        echo "export CONSUL_HTTP_ADDR=https://127.0.0.1:#{node['consul']['http_api_port']}" >> .bashrc
+        echo "export CONSUL_TLS_SERVER_NAME=$(hostname -A | tr -d '[:space:]')" >> .bashrc
     EOH
 end
