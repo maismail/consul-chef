@@ -11,6 +11,7 @@ chef_version '>= 12.1' if respond_to?(:chef_version)
 
 depends 'conda'
 depends 'kagent'
+depends 'hops'
 
 attribute "consul/user",
           :description => "System user to run the service",
@@ -43,7 +44,7 @@ attribute "consul/effective_resolv_conf",
 attribute "consul/http_api_port",
           :description => "Port of agent HTTP API",
           :type => 'string'
-          
+
 attribute "consul/bind_address",
           :description => "IP address Consul agent will bind to. You can also set a go-sockaddr template. Check https://www.consul.io/docs/agent/options.html#_bind for more information.",
           :type => 'string'
