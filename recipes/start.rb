@@ -26,13 +26,13 @@ systemd_unit "consul.service" do
 end
 
 if node['kagent']['enabled'].casecmp("true")
-    kagent_config service_name do
+    kagent_config "consul" do
       service "Consul"
     end
 end
 
 if node['services']['enabled'].casecmp("true")
     systemd_unit "consul.service" do
-        action [:enable]
+        action :enable
     end
 end

@@ -6,7 +6,6 @@ After=network-online.target
 ConditionFileNotEmpty=<%= node['consul']['conf_dir'] %>/consul.hcl
 
 [Service]
-Type=notify
 User=<%= node['consul']['user'] %>
 Group=<%= node['consul']['group'] %>
 ExecStart=<%= node['consul']['bin_dir'] %>/consul agent -bind <%= @bind_address %> -config-dir=<%= node['consul']['conf_dir'] %>
