@@ -68,6 +68,13 @@ if node['consul']['use_dnsmasq'].casecmp("true")
     end
 end
 
+template "#{node['consul']['conf_dir']}/systemd_env_vars" do
+    source "init/systemd_env_vars.erb"
+    owner node['consul']['user']
+    group node['consul']['group']
+    mode 0750
+end
+
 bash "export security env variables for client" do
     user node['consul']['user']
     group node['consul']['group']

@@ -19,5 +19,5 @@ cert_file = "<%= node["kagent"]["certs_dir"] %>/pub.pem"
 key_file = "<%= node["kagent"]["certs_dir"] %>/priv.key"
 ports = {
    http = -1,
-   https = <%= ['consul']['http_api_port'] %>
+   https = <%= node['consul']['http_api_port'] %>
 }
