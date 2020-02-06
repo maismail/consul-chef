@@ -5,3 +5,17 @@ enable_local_script_checks = true
 performance = {
     raft_multiplier = 1
 }
+
+verify_incoming = true
+verify_outgoing = true
+verify_server_hostname = false
+auto_encrypt = {
+   allow_tls = true
+}
+ca_file = "<%= node["kagent"]["certs"]["root_ca"] %>"
+cert_file = "<%= node["kagent"]["certs_dir"] %>/pub.pem"
+key_file = "<%= node["kagent"]["certs_dir"] %>/priv.key"
+ports = {
+   http = -1,
+   https = <%= ['consul']['http_api_port'] %>
+}

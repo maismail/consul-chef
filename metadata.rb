@@ -40,6 +40,10 @@ attribute "consul/effective_resolv_conf",
           :description => "Effective resolv.conf file. Be aware for Ubuntu /etc/resolv.conf is a symlink. Add here the source, not the symlink. Leave empty for auto-configuration",
           :type => 'string'
 
+attribute "consul/http_api_port",
+          :description => "Port of agent HTTP API",
+          :type => 'string'
+          
 attribute "consul/bind_address",
           :description => "IP address Consul agent will bind to. You can also set a go-sockaddr template. Check https://www.consul.io/docs/agent/options.html#_bind for more information.",
           :type => 'string'

@@ -11,6 +11,7 @@ default['consul']['bin_url']                    = "#{node['download_url']}/consu
 default['consul']['use_dnsmasq']                = "true"
 default['consul']['configure_resolv_conf']      = "true"
 default['consul']['effective_resolv_conf']      = ""
+default['consul']['http_api_port']              = "8501"
 
 default['consul']['bind_address']               = ""
 
