@@ -1,6 +1,7 @@
 datacenter = "lc"
 data_dir = "<%= node['consul']['data_dir'] %>"
 retry_join = <%= @masters %>
+enable_local_script_checks = true
 performance = {
     raft_multiplier = 1
 }

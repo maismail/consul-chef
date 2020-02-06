@@ -15,26 +15,18 @@ user node['consul']['user'] do
     not_if { node['install']['external_users'].casecmp("true") == 0 }
 end
 
-
-## REMOVE
-group "hadoop" do
+group node['hops']['group'] do
     action :create
-    not_if "getent group hadoop"
+    not_if "getent group #{node['hops']['group']}"
     not_if { node['install']['external_users'].casecmp("true") == 0 }
-  end
+end
 
-## REMOVE
-  user "hdfs" do
-    home "/home/hdfs"
-    gid "hadoop"
-    system true
-    shell "/bin/bash"
-    manage_home true
-    action :create
-    not_if "getent passwd hdfs"
+group node['hops']['group'] do
+    action :modify
+    members ["#{node['consul']['user']}"]
+    append true
     not_if { node['install']['external_users'].casecmp("true") == 0 }
-  end
-
+end
 
 directory node['consul']['dir']  do
     owner node['consul']['user']

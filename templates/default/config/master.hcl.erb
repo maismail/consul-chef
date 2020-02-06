@@ -3,6 +3,7 @@ server = true
 bootstrap_expect = <%= node['consul']['master']['bootstrap_expect'] %>
 ui = <%= node['consul']['master']['ui'] %>
 data_dir = "<%= node['consul']['data_dir'] %>"
+enable_local_script_checks = true
 performance = {
     raft_multiplier = 1
 }
