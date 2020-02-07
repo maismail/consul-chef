@@ -5,6 +5,7 @@ action :register do
         owner node['consul']['user']
         group node['consul']['group']
         mode 0500
+        variables new_resource.template_variables
         notifies :reload, 'systemd_unit[consul.service]', :immediately
     end
 

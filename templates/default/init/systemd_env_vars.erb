@@ -2,4 +2,3 @@ CONSUL_CACERT=<%= node["kagent"]["certs"]["root_ca"]%>
 CONSUL_CLIENT_CERT=<%= node["kagent"]["certs_dir"] %>/pub.pem
 CONSUL_CLIENT_KEY=<%= node["kagent"]["certs_dir"] %>/priv.key
 CONSUL_HTTP_ADDR=https://127.0.0.1:<%= node['consul']['http_api_port'] %>
-CONSUL_TLS_SERVER_NAME=$(hostname -A | tr -d '[:space:]')
