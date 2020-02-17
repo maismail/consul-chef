@@ -6,10 +6,10 @@ action :register do
         group node['consul']['group']
         mode 0500
         variables new_resource.template_variables
-        notifies :reload, 'systemd_unit[consul.service]', :immediately
     end
 
     systemd_unit "consul.service" do
         action :reload
+        only_if { new_resource.reload_consul }
     end
 end
