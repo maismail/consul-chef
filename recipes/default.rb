@@ -48,7 +48,7 @@ if node['consul']['use_dnsmasq'].casecmp("true")
             owner 'root'
             group 'root'
             mode '0755'
-            content "port=53\nresolv-file=#{resolv_conf}\nbind-interfaces\nlisten-address=127.0.0.1\nserver=/consul/127.0.0.1#8600"
+            content "port=53\nresolv-file=#{resolv_conf}\nbind-interfaces\nlisten-address=127.0.0.1\nserver=/#{node['consul']['domain']}/127.0.0.1#8600"
         end
 
         bash "configure new resolv.conf" do

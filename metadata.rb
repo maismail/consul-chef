@@ -44,6 +44,10 @@ attribute "consul/effective_resolv_conf",
 attribute "consul/http_api_port",
           :description => "Port of agent HTTP API",
           :type => 'string'
+        
+attribute "consul/domain",
+          :description => "Domain to be handled by Consul",
+          :type => 'string'
 
 attribute "consul/bind_address",
           :description => "IP address Consul agent will bind to. You can also set a go-sockaddr template. Check https://www.consul.io/docs/agent/options.html#_bind for more information.",
