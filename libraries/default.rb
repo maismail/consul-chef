@@ -44,6 +44,12 @@ class ConsulHelper
         end
     end
 
+    def get_service_fqdn(prefix)
+        unless prefix.end_with?(".")
+            prefix = "#{prefix}."
+        end
+        "#{prefix}#{@node['consul']['domain']}"
+    end
 end
 
 class Chef
