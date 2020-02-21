@@ -15,13 +15,18 @@ user node['consul']['user'] do
     not_if { node['install']['external_users'].casecmp("true") == 0 }
 end
 
-group node['hops']['group'] do
+hops_group = "hadoop"
+if node.attribute?("hops") && node['hops'].attribute?("group")
+    hops_group = node['hops']['group']
+end
+
+group hops_group do
     action :create
-    not_if "getent group #{node['hops']['group']}"
+    not_if "getent group #{hops_group}"
     not_if { node['install']['external_users'].casecmp("true") == 0 }
 end
 
-group node['hops']['group'] do
+group hops_group do
     action :modify
     members ["#{node['consul']['user']}"]
     append true
