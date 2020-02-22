@@ -16,7 +16,7 @@ auto_encrypt = {
    allow_tls = true
 }
 ca_file = "<%= node["kagent"]["certs"]["root_ca"] %>"
-cert_file = "<%= node["kagent"]["certs_dir"] %>/pub.pem"
+cert_file = "<%= node["kagent"]["certs"]["elastic_host_certificate"] %>"
 key_file = "<%= node["kagent"]["certs_dir"] %>/priv.key"
 ports = {
    http = -1,
