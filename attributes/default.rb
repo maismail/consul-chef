@@ -15,6 +15,9 @@ default['consul']['http_api_port']              = "8501"
 default['consul']['domain']                     = "consul"
 
 default['consul']['bind_address']               = ""
+default['consul']['retry_join']['provider']     = node['install']['cloud']
+default['consul']['retry_join']['tag_key']      = nil
+default['consul']['retry_join']['tag_value']    = nil
 
 default['consul']['master']['bootstrap_expect'] = 1
 default['consul']['master']['ui']               = "true"
