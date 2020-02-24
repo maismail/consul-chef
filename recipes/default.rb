@@ -91,6 +91,6 @@ bash "export security env variables for client" do
         echo "export CONSUL_CLIENT_CERT=#{node["kagent"]["certs_dir"]}/pub.pem" >> .bashrc
         echo "export CONSUL_CLIENT_KEY=#{node["kagent"]["certs_dir"]}/priv.key" >> .bashrc
         echo "export CONSUL_HTTP_ADDR=https://127.0.0.1:#{node['consul']['http_api_port']}" >> .bashrc
-        echo "export CONSUL_TLS_SERVER_NAME=$(hostname -A | tr -d '[:space:]')" >> .bashrc
+        echo "export CONSUL_TLS_SERVER_NAME=$(hostname -f | tr -d '[:space:]')" >> .bashrc
     EOH
 end
