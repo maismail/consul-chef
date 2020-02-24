@@ -6,13 +6,31 @@ if node['consul']['use_dnsmasq'].casecmp("true")
         # Disable systemd-resolved for Ubuntu
         case node["platform_family"]
         when "debian"
-            bash "Effectively disable systemd-resolved" do
+            # Follow steps from here https://github.com/hashicorp/terraform-aws-consul/tree/master/modules
+            package "iptables-persistent"
+
+            bash "Set debconf" do
                 user 'root'
                 group 'root'
                 code <<-EOH
-                    echo "DNSStubListener=no" | sudo tee --append /etc/systemd/resolved.conf
+                    echo iptables-persistent iptables-persistent/autosave_v4 boolean true | debconf-set-selections
+                    echo iptables-persistent iptables-persistent/autosave_v6 boolean true | debconf-set-selections
                 EOH
             end
+
+            bash "Configure systemd-resolved" do
+                user 'root'
+                group 'root'
+                code <<-EOH
+                    iptables -t nat -A OUTPUT -d localhost -p udp -m udp --dport 53 -j REDIRECT --to-ports 8600
+                    iptables -t nat -A OUTPUT -d localhost -p tcp -m tcp --dport 53 -j REDIRECT --to-ports 8600
+                    iptables-save | tee /etc/iptables/rules.v4
+                    ip6tables-save | sudo tee /etc/iptables/rules.v6
+                    sed -i "s/#DNS=/DNS=127.0.0.1/g" /etc/systemd/resolved.conf
+                    sed -i "s/#Domains=/Domains=~#{node['consul']['domain']}/g"
+                EOH
+            end
+
             systemd_unit "systemd-resolved.service" do
                 action [:restart]
             end
@@ -48,18 +66,7 @@ if node['consul']['use_dnsmasq'].casecmp("true")
             owner 'root'
             group 'root'
             mode '0755'
-            content "port=53\nresolv-file=#{resolv_conf}\nbind-interfaces\nlisten-address=127.0.0.1\nserver=/#{node['consul']['domain']}/127.0.0.1#8600"
-        end
-
-        bash "configure new resolv.conf" do
-            user 'root'
-            group 'root'
-            code <<-EOH
-                set -e
-                rm -f /etc/resolv.conf
-                echo "nameserver 127.0.0.1" > /etc/resolv.conf
-                chmod 644 /etc/resolv.conf
-            EOH
+            content "port=53\nbind-interfaces\nlisten-address=127.0.0.1\nserver=/#{node['consul']['domain']}/127.0.0.1#8600"
         end
 
         systemd_unit "dnsmasq.service" do
