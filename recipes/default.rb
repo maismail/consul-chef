@@ -27,7 +27,7 @@ if node['consul']['use_dnsmasq'].casecmp("true")
                     iptables-save | tee /etc/iptables/rules.v4
                     ip6tables-save | sudo tee /etc/iptables/rules.v6
                     sed -i "s/#DNS=/DNS=127.0.0.1/g" /etc/systemd/resolved.conf
-                    sed -i "s/#Domains=/Domains=~#{node['consul']['domain']}/g"
+                    sed -i "s/#Domains=/Domains=~#{node['consul']['domain']}/g" /etc/systemd/resolved.conf
                 EOH
             end
 
