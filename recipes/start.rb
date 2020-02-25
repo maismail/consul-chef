@@ -8,7 +8,7 @@ end
 if node['consul']['bind_address'].empty?
     bind_address = my_private_ip()
 else
-    bind_address = node['consul']['bind_address']
+    bind_address = "'#{node['consul']['bind_address']}'"
 end
 
 template service_target do
