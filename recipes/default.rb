@@ -2,7 +2,7 @@
 if node['consul']['use_dnsmasq'].casecmp("true")
     package 'dnsmasq'
 
-    if node['consul']['configure_resolv_conf'].casecmp("true")
+    if node['consul']['configure_resolv_conf'].casecmp("true") &&  ! ::File.exist?('/etc/dnsmasq.d/default')
         # Disable systemd-resolved for Ubuntu
         case node["platform_family"]
         when "debian"
@@ -31,13 +31,15 @@ if node['consul']['use_dnsmasq'].casecmp("true")
                 EOH
             end
 
+            file "/etc/dnsmasq.d/default" do
+                owner 'root'
+                group 'root'
+                mode '0755'
+                content "port=53\nbind-interfaces\nlisten-address=127.0.0.1\nserver=/#{node['consul']['domain']}/127.0.0.1#8600"
+            end
+
             systemd_unit "systemd-resolved.service" do
                 action [:restart]
-            end
-            if node['consul']['effective_resolv_conf'].empty?
-                resolv_conf = "/var/run/systemd/resolve/resolv.conf"
-            else
-                resolv_conf = node['consul']['effective_resolv_conf']
             end
         when "rhel"
             directory "/var/run/dnsmasq" do
@@ -58,15 +60,16 @@ if node['consul']['use_dnsmasq'].casecmp("true")
                     set -e
                     cp #{effective_resolv_conf} /var/run/dnsmasq
                 EOH
+                not_if { ::File.exist?('/var/run/dnsmasq/resolv.conf') }
             end
             resolv_conf = "/var/run/dnsmasq/resolv.conf"
-        end
 
-        file "/etc/dnsmasq.d/default" do
-            owner 'root'
-            group 'root'
-            mode '0755'
-            content "port=53\nbind-interfaces\nlisten-address=127.0.0.1\nserver=/#{node['consul']['domain']}/127.0.0.1#8600"
+            file "/etc/dnsmasq.d/default" do
+                owner 'root'
+                group 'root'
+                mode '0755'
+                content "port=53\nresolv-file=#{resolv_conf}\nbind-interfaces\nlisten-address=127.0.0.1\nserver=/#{node['consul']['domain']}/127.0.0.1#8600"
+            end
         end
 
         systemd_unit "dnsmasq.service" do
@@ -93,4 +96,5 @@ bash "export security env variables for client" do
         echo "export CONSUL_HTTP_ADDR=https://127.0.0.1:#{node['consul']['http_api_port']}" >> .bashrc
         echo "export CONSUL_TLS_SERVER_NAME=$(hostname -f | tr -d '[:space:]')" >> .bashrc
     EOH
+    not_if "grep CONSUL_TLS_SERVER_NAME #{node['consul']['home']}"
 end
