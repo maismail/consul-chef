@@ -60,6 +60,7 @@ if node['consul']['use_dnsmasq'].casecmp("true")
                     set -e
                     cp #{effective_resolv_conf} /var/run/dnsmasq
                 EOH
+                notifies :run, 'bash[configure-resolv.conf]', :immediately
                 not_if { ::File.exist?('/var/run/dnsmasq/resolv.conf') }
             end
             resolv_conf = "/var/run/dnsmasq/resolv.conf"
@@ -69,6 +70,19 @@ if node['consul']['use_dnsmasq'].casecmp("true")
                 group 'root'
                 mode '0755'
                 content "port=53\nresolv-file=#{resolv_conf}\nbind-interfaces\nlisten-address=127.0.0.1\nserver=/#{node['consul']['domain']}/127.0.0.1#8600"
+            end
+
+            bash "configure-resolv.conf" do
+                user 'root'
+                group 'root'
+                code <<-EOH
+                    set -e
+                    cp /etc/resolv.conf /etc/resolv.conf.bak
+                    rm -f /etc/resolv.conf
+                    echo "nameserver 127.0.0.1" > /etc/resolv.conf
+                    chmod 644 /etc/resolv.conf
+                EOH
+                action :nothing
             end
         end
 
