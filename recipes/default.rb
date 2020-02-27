@@ -26,7 +26,7 @@ if node['consul']['use_dnsmasq'].casecmp("true")
                     iptables -t nat -A OUTPUT -d localhost -p tcp -m tcp --dport 53 -j REDIRECT --to-ports 8600
                     iptables-save | tee /etc/iptables/rules.v4
                     ip6tables-save | sudo tee /etc/iptables/rules.v6
-                    sed -i "s/#DNS=/DNS=127.0.0.1/g" /etc/systemd/resolved.conf
+                    sed -i "s/#DNS=/DNS=127.0.0.2/g" /etc/systemd/resolved.conf
                     sed -i "s/#Domains=/Domains=~#{node['consul']['domain']}/g" /etc/systemd/resolved.conf
                 EOH
             end
@@ -35,7 +35,7 @@ if node['consul']['use_dnsmasq'].casecmp("true")
                 owner 'root'
                 group 'root'
                 mode '0755'
-                content "port=53\nbind-interfaces\nlisten-address=127.0.0.1\nserver=/#{node['consul']['domain']}/127.0.0.1#8600"
+                content "port=53\nbind-interfaces\nno-resolv\nlisten-address=127.0.0.2\nserver=/#{node['consul']['domain']}/127.0.0.1#8600"
             end
 
             systemd_unit "systemd-resolved.service" do
