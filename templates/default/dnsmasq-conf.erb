@@ -1,0 +1,10 @@
+port=53
+<% if !@resolv_conf.nil? -%>
+resolv-file=<%= @resolv_conf.strip %>
+<% else -%>
+no-resolv
+<% end -%>
+bind-interfaces
+listen-address=<%= @dnsmasq_ip %>
+server=/<%= node['consul']['domain'] %>/127.0.0.1#8600
+interface-name=local.n0de.cl4,<%= @if_name %>

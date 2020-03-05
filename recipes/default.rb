@@ -3,6 +3,8 @@ if node['consul']['use_dnsmasq'].casecmp("true")
     package 'dnsmasq'
 
     if node['consul']['configure_resolv_conf'].casecmp("true") &&  ! ::File.exist?('/etc/dnsmasq.d/default')
+
+        interface_name = consul_helper.get_ifname_from_ip(my_private_ip())
         # Disable systemd-resolved for Ubuntu
         case node["platform_family"]
         when "debian"
@@ -31,11 +33,16 @@ if node['consul']['use_dnsmasq'].casecmp("true")
                 EOH
             end
 
-            file "/etc/dnsmasq.d/default" do
+            template "/etc/dnsmasq.d/default" do
+                source "dnsmasq-conf.erb"
                 owner 'root'
                 group 'root'
-                mode '0755'
-                content "port=53\nbind-interfaces\nno-resolv\nlisten-address=127.0.0.2\nserver=/#{node['consul']['domain']}/127.0.0.1#8600"
+                mode 0755
+                variables({
+                    :resolv_conf => nil,
+                    :if_name => interface_name,
+                    :dnsmasq_ip => "127.0.0.2"
+                })
             end
 
             systemd_unit "systemd-resolved.service" do
@@ -65,11 +72,16 @@ if node['consul']['use_dnsmasq'].casecmp("true")
             end
             resolv_conf = "/var/run/dnsmasq/resolv.conf"
 
-            file "/etc/dnsmasq.d/default" do
+            template "/etc/dnsmasq.d/default" do
+                source "dnsmasq-conf.erb"
                 owner 'root'
                 group 'root'
-                mode '0755'
-                content "port=53\nresolv-file=#{resolv_conf}\nbind-interfaces\nlisten-address=127.0.0.1\nserver=/#{node['consul']['domain']}/127.0.0.1#8600"
+                mode 0755
+                variables({
+                    :resolv_conf => resolv_conf,
+                    :if_name => interface_name,
+                    :dnsmasq_ip => "127.0.0.1"
+                })
             end
 
             bash "configure-resolv.conf" do

@@ -2,6 +2,7 @@ require 'openssl'
 require 'net/http'
 require 'uri'
 require 'json'
+require 'socket'
 
 class ConsulHelper
     def initialize(node)
@@ -49,6 +50,17 @@ class ConsulHelper
             prefix = "#{prefix}."
         end
         "#{prefix}service.#{@node['consul']['domain']}"
+    end
+
+    def get_ifname_from_ip(ip_address)
+        ifs = Socket.getifaddrs
+        i_f = ifs.select do |i|
+            i.addr.ip? and i.addr.ip_address.eql? ip_address
+        end
+        if i_f.length() != 1
+            raise "Error found #{i_f.length()} number of network interfaces for IP: #{ip_address}"
+        end
+        i_f[0].name
     end
 end
 
