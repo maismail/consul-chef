@@ -13,7 +13,6 @@ default['consul']['configure_resolv_conf']      = "true"
 default['consul']['effective_resolv_conf']      = ""
 default['consul']['http_api_port']              = "8501"
 default['consul']['domain']                     = "consul"
-default['consul']['private_ip_reserved_domain'] = "local.n0de.cl4"
 
 default['consul']['bind_address']               = ""
 default['consul']['retry_join']['provider']     = node['install']['cloud']

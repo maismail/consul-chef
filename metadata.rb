@@ -48,10 +48,6 @@ attribute "consul/domain",
           :description => "Domain to be handled by Consul",
           :type => 'string'
 
-attribute "consul/private_ip_reserved_domain",
-          :description => "Special reserved domain which will always resolve to the private IP of the node",
-          :type => 'string'
-
 attribute "consul/bind_address",
           :description => "IP address Consul agent will bind to. You can also set a go-sockaddr template. Check https://www.consul.io/docs/agent/options.html#_bind for more information.",
           :type => 'string'
