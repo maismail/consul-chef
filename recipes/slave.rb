@@ -1,3 +1,5 @@
+include_recipe "consul::default"
+
 if node['consul']['retry_join']['provider'].empty?
     masters = private_recipe_ips("consul", "master")
 elsif not node['consul']['retry_join']['provider'].empty? and node['consul']['retry_join']['tag_key'].nil?
