@@ -9,6 +9,9 @@ issues_url 'https://github.com/logicalclocks/consul-chef/issues'
 version '1.3.0'
 chef_version '>= 12.1' if respond_to?(:chef_version)
 
+depends 'conda'
+depends 'kagent'
+
 
 attribute "consul/user",
           :description => "System user to run the service",
