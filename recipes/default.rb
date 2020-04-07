@@ -4,7 +4,22 @@ if node['consul']['use_dnsmasq'].casecmp("true")
 
     if node['consul']['configure_resolv_conf'].casecmp("true") &&  ! ::File.exist?('/etc/dnsmasq.d/default')
 
-        interface_name = consul_helper.get_ifname_from_ip(my_private_ip())
+        kubernetes_dns = nil
+        kubernetes_domain_name = nil
+        if node['install']['enterprise']['install'].casecmp?("true") and node['install']['kubernetes'].casecmp?("true")
+            kubernetes_dns = "10.96.0.10"
+            kubernetes_domain_name = "cluster.local"
+            if node.attribute?('kube-hops')
+                if node['kube-hops'].attribute?('dns_ip')
+                    kubernetes_dns = node['kube-hops']['dns_ip']
+                end
+                if node['kube-hops'].attribute?('cluster_domain')
+                    kubernetes_domain_name = node['kube-hops']['cluster_domain']
+                end
+            end
+
+        end
+        my_ip = my_private_ip()
         # Disable systemd-resolved for Ubuntu
         case node["platform_family"]
         when "debian"
@@ -24,6 +39,7 @@ if node['consul']['use_dnsmasq'].casecmp("true")
                 user 'root'
                 group 'root'
                 code <<-EOH
+                    set -e
                     iptables -t nat -A OUTPUT -d localhost -p udp -m udp --dport 53 -j REDIRECT --to-ports 8600
                     iptables -t nat -A OUTPUT -d localhost -p tcp -m tcp --dport 53 -j REDIRECT --to-ports 8600
                     iptables-save | tee /etc/iptables/rules.v4
@@ -40,8 +56,9 @@ if node['consul']['use_dnsmasq'].casecmp("true")
                 mode 0755
                 variables({
                     :resolv_conf => nil,
-                    :if_name => interface_name,
-                    :dnsmasq_ip => "127.0.0.2"
+                    :dnsmasq_ip => "127.0.0.2,#{my_ip}",
+                    :kubernetes_dns => kubernetes_dns,
+                    :kubernetes_domain_name => kubernetes_domain_name
                 })
             end
 
@@ -49,28 +66,29 @@ if node['consul']['use_dnsmasq'].casecmp("true")
                 action [:restart]
             end
         when "rhel"
-            directory "/var/run/dnsmasq" do
-                owner 'root'
-                group 'root'
-                mode '755'
-                action
-            end
             if node['consul']['effective_resolv_conf'].empty?
                 effective_resolv_conf = "/etc/resolv.conf"
             else
                 effective_resolv_conf = node['consul']['effective_resolv_conf']
+            end
+            dnsmasq_resolv_dir = "/srv/dnsmasq"
+            dnsmasq_resolv_file = "#{dnsmasq_resolv_dir}/resolv.conf"
+            directory dnsmasq_resolv_dir do	
+                owner 'root'	
+                group 'root'	
+                mode '755'	
+                action	
             end
             bash "copy resolv.conf to dnsmasq directory" do
                 user 'root'
                 group 'root'
                 code <<-EOH
                     set -e
-                    cp #{effective_resolv_conf} /var/run/dnsmasq
+                    cp #{effective_resolv_conf} #{dnsmasq_resolv_dir}
                 EOH
                 notifies :run, 'bash[configure-resolv.conf]', :immediately
-                not_if { ::File.exist?('/var/run/dnsmasq/resolv.conf') }
+                not_if { ::File.exist?(dnsmasq_resolv_file) }
             end
-            resolv_conf = "/var/run/dnsmasq/resolv.conf"
 
             template "/etc/dnsmasq.d/default" do
                 source "dnsmasq-conf.erb"
@@ -78,9 +96,10 @@ if node['consul']['use_dnsmasq'].casecmp("true")
                 group 'root'
                 mode 0755
                 variables({
-                    :resolv_conf => resolv_conf,
-                    :if_name => interface_name,
-                    :dnsmasq_ip => "127.0.0.1"
+                    :resolv_conf => dnsmasq_resolv_file,
+                    :dnsmasq_ip => "127.0.0.1,#{my_ip}",
+                    :kubernetes_dns => kubernetes_dns,
+                    :kubernetes_domain_name => kubernetes_domain_name
                 })
             end
 
@@ -91,7 +110,7 @@ if node['consul']['use_dnsmasq'].casecmp("true")
                     set -e
                     cp /etc/resolv.conf /etc/resolv.conf.bak
                     rm -f /etc/resolv.conf
-                    echo "nameserver 127.0.0.1" > /etc/resolv.conf
+                    echo "nameserver #{my_ip}" > /etc/resolv.conf
                     chmod 644 /etc/resolv.conf
                 EOH
                 action :nothing
