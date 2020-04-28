@@ -12,4 +12,9 @@ action :register do
         action :reload
         only_if { new_resource.reload_consul }
     end
+
+    systemd_unit "consul.service" do
+        action :restart
+        only_if { new_resource.restart_consul }
+    end
 end
