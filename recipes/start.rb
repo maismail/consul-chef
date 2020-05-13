@@ -11,13 +11,16 @@ else
     bind_address = "'#{node['consul']['bind_address']}'"
 end
 
+consul_tls_server= node['install']['localhost'].casecmp?("true") ? "localhost" : "$(hostname -f | tr -d '[:space:]')"
+
 template service_target do
     source "init/consul.service.erb"
     owner 'root'
     group 'root'
     mode 0644
     variables({
-        :bind_address => bind_address
+        :bind_address => bind_address,
+        :consul_tls_server => consul_tls_server
     })
 end
 

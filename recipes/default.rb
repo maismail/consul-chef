@@ -143,6 +143,7 @@ template "#{node['consul']['conf_dir']}/systemd_env_vars" do
     mode 0750
 end
 
+consul_tls_server= node['install']['localhost'].casecmp?("true")? "localhost" : "$(hostname -f | tr -d '[:space:]')"
 bash "export security env variables for client" do
     user node['consul']['user']
     group node['consul']['group']
@@ -152,7 +153,7 @@ bash "export security env variables for client" do
         echo "export CONSUL_CLIENT_CERT=#{node["kagent"]["certs_dir"]}/pub.pem" >> .bashrc
         echo "export CONSUL_CLIENT_KEY=#{node["kagent"]["certs_dir"]}/priv.key" >> .bashrc
         echo "export CONSUL_HTTP_ADDR=https://127.0.0.1:#{node['consul']['http_api_port']}" >> .bashrc
-        echo "export CONSUL_TLS_SERVER_NAME=$(hostname -f | tr -d '[:space:]')" >> .bashrc
+        echo "export CONSUL_TLS_SERVER_NAME=#{consul_tls_server}" >> .bashrc
     EOH
     not_if "grep CONSUL_TLS_SERVER_NAME #{node['consul']['home']}"
 end
